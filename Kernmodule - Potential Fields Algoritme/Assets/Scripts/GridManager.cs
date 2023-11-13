@@ -24,7 +24,6 @@ public class GridManager : MonoBehaviour
 
     void GenerateGrid()
     {
-        // Instantiate agents and obstacles
         for (int x = 0; x < gridSizeX; x++)
         {
             for (int y = 0; y < gridSizeY; y++)
@@ -35,7 +34,6 @@ public class GridManager : MonoBehaviour
                 cell.transform.localScale = new Vector3(cellSize, cellSize, 1f);
                 cell.transform.parent = transform;
 
-                // Instantiate agents
                 if (Random.value < (float)numAgents / (gridSizeX * gridSizeY))
                 {
                     Vector3 agentPosition = new Vector3(x * cellSize, y * cellSize, -1f);
@@ -45,7 +43,6 @@ public class GridManager : MonoBehaviour
                     agent.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                 }
 
-                // Randomly place obstacles based on the obstacleProbability
                 if (Random.value < obstacleProbability)
                 {
                     Vector3 obstaclePosition = new Vector3(x * cellSize, y * cellSize, -1f);
@@ -65,9 +62,8 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Spawn goal in a random cell without an obstacle
         Vector3 goalPosition = Vector3.zero;
-        goalPosition.z = -1f; // Adjust the z-coordinate
+        goalPosition.z = -1f;
         goal = Instantiate(goalPrefab, goalPosition, Quaternion.identity);
     }
 }

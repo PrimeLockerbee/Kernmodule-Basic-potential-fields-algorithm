@@ -18,17 +18,14 @@ public class Agent : MonoBehaviour
 
     void Update()
     {
-        // Calculate forces and update position
         Vector3 totalForce = CalculateForces();
         UpdateVelocityAndPosition(totalForce);
 
-        // Check proximity to the goal
-        float goalProximityThreshold = 1f; // Adjust as needed
+        float goalProximityThreshold = 1f;
         float distanceToGoal = Vector3.Distance(transform.position, goal.position);
 
         if (distanceToGoal < goalProximityThreshold)
         {
-            // Agent is close to the goal
             Disappear();
         }
     }
@@ -50,7 +47,6 @@ public class Agent : MonoBehaviour
 
     Vector3 CalculateAttractiveForce()
     {
-        // This force guides the agent towards the goal
         Vector3 agentToGoal = goal.position - transform.position;
         return agentToGoal.normalized; // Normalize the force
     }
@@ -62,33 +58,53 @@ public class Agent : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, repulsionRadius);
         foreach (Collider collider in hitColliders)
         {
-            // Exclude the agent itself from the repulsion
             if (collider.gameObject != gameObject)
             {
                 Vector3 agentToObstacle = transform.position - collider.transform.position;
-                float distance = agentToObstacle.magnitude;
 
-                // Increase repulsion strength
-                float strength = Mathf.Clamp01(1.0f - distance / repulsionRadius);
-                repulsiveForce += agentToObstacle.normalized * strength * repulsionStrengthFactor;
+                float distanceToObstacle = agentToObstacle.magnitude;
+                float additionalRepulsion = 1.0f;
+
+                if (distanceToObstacle < repulsionRadius)
+                {
+                    additionalRepulsion *= 1.0f - (distanceToObstacle / repulsionRadius);
+                }
+
+                repulsiveForce += agentToObstacle.normalized * additionalRepulsion;
             }
         }
 
         return repulsiveForce.normalized;
     }
 
+    //Vector3 CalculateRepulsiveForce()
+    //{
+    //    Vector3 repulsiveForce = Vector3.zero;
+
+    //    Collider[] hitColliders = Physics.OverlapSphere(transform.position, repulsionRadius);
+    //    foreach (Collider collider in hitColliders)
+    //    {
+    //        if (collider.gameObject != gameObject)
+    //        {
+    //            Vector3 agentToObstacle = transform.position - collider.transform.position;
+    //            float distanceToObstacle = agentToObstacle.magnitude;
+
+    //            float additionalRepulsion = 1.0f - (distanceToObstacle / repulsionRadius);
+    //            repulsiveForce += agentToObstacle.normalized * additionalRepulsion;
+    //        }
+    //    }
+
+    //    return repulsiveForce.normalized;
+    //}
+
     void UpdateVelocityAndPosition(Vector3 force)
     {
-        // Apply the force to the agent's velocity
         Vector3 newVelocity = force * speed;
 
-        // Restrict movement to the x and y axes
         newVelocity.z = 0;
 
-        // Move the agent based on the updated velocity
         Vector3 newPosition = transform.position + newVelocity * Time.deltaTime;
 
-        // Ensure the agent stays within the grid bounds
         float minX = 0.0f;
         float maxX = (gridManager.gridSizeX - 1) * gridManager.cellSize;
         float minY = 0.0f;
@@ -97,7 +113,6 @@ public class Agent : MonoBehaviour
         newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
         newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
 
-        // Avoid overlapping with other agents
         AvoidAgentCollisions(ref newPosition);
 
         transform.position = newPosition;
@@ -105,24 +120,27 @@ public class Agent : MonoBehaviour
 
     void AvoidAgentCollisions(ref Vector3 newPosition)
     {
-        float avoidanceRadius = 1.0f; // Adjust as needed
+        float avoidanceRadius = 1.0f;
+        float avoidanceForceFactor = 5.0f;
 
         Collider[] hitColliders = Physics.OverlapSphere(newPosition, avoidanceRadius);
+        Vector3 avoidanceForce = Vector3.zero;
+
         foreach (Collider collider in hitColliders)
         {
-            // Exclude the agent itself from the collision avoidance
             if (collider.gameObject != gameObject && collider.CompareTag("Agent"))
             {
                 Vector3 agentToOtherAgent = newPosition - collider.transform.position;
                 float distance = agentToOtherAgent.magnitude;
 
-                // If too close to another agent, adjust position to avoid collision
                 if (distance < avoidanceRadius)
                 {
-                    Vector3 avoidanceDirection = agentToOtherAgent.normalized;
-                    newPosition += avoidanceDirection * (avoidanceRadius - distance);
+                    float avoidanceStrength = 1.0f - (distance / avoidanceRadius);
+                    avoidanceForce += agentToOtherAgent.normalized * avoidanceStrength;
                 }
             }
         }
+
+        newPosition += avoidanceForce * avoidanceForceFactor;
     }
 }
