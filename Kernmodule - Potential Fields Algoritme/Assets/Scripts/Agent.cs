@@ -57,7 +57,7 @@ public class Agent : MonoBehaviour
     {
         Vector3 repulsiveForce = Vector3.zero;
 
-        int numRays = 8;
+        int numRays = 4;
         for (int i = 0; i < numRays; i++)
         {
             float angle = i * 2 * Mathf.PI / numRays;
