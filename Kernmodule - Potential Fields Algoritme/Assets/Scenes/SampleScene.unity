@@ -303,7 +303,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.8, y: 24.4, z: -50.2}
+  m_LocalPosition: {x: 12.15, y: 12.94, z: -50.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -338,13 +338,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 822e88d45d6306140ab0f4e15c586494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSizeX: 50
-  gridSizeY: 50
+  gridSizeX: 25
+  gridSizeY: 25
   cellSize: 1
   cellPrefab: {fileID: 3791874403651138548, guid: d5a61e0c6166a6848af93acc14c0c2f6, type: 3}
   obstaclePrefab: {fileID: 1636093987316161863, guid: 39d41b57b8299d846aeea4bd492420fb, type: 3}
   agentPrefab: {fileID: 6958071600761360122, guid: b258458d5e8a58344a3cbb414a1e6f46, type: 3}
   goalPrefab: {fileID: 3518409776646041630, guid: 5e5c8b49dfffbc84e8776745e2ef2556, type: 3}
+  goal: {fileID: 0}
   obstacleProbability: 0.1
   numAgents: 100
   obstacleMaterial: {fileID: 2100000, guid: ff7f05863871d6f4bb163cc577d8cd4d, type: 2}

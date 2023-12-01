@@ -17,9 +17,12 @@ public class GridManager : MonoBehaviour
 
     public Material obstacleMaterial;
 
+    [SerializeField] private float[,] potentialField;
+
     void Start()
     {
         GenerateGrid();
+        CalculatePotentialField();
     }
 
     void GenerateGrid()
@@ -65,5 +68,31 @@ public class GridManager : MonoBehaviour
         Vector3 goalPosition = Vector3.zero;
         goalPosition.z = -1f;
         goal = Instantiate(goalPrefab, goalPosition, Quaternion.identity);
+    }
+
+    void CalculatePotentialField()
+    {
+        potentialField = new float[gridSizeX, gridSizeY];
+
+        for (int x = 0; x < gridSizeX; x++)
+        {
+            for (int y = 0; y < gridSizeY; y++)
+            {
+                Vector3 cellPosition = new Vector3(x * cellSize, y * cellSize, 0f);
+                float distanceToGoal = Vector3.Distance(cellPosition, goal.transform.position);
+                potentialField[x, y] = distanceToGoal;
+            }
+        }
+    }
+
+    public float GetPotentialFieldValue(Vector3 position)
+    {
+        int x = Mathf.FloorToInt(position.x / cellSize);
+        int y = Mathf.FloorToInt(position.y / cellSize);
+
+        x = Mathf.Clamp(x, 0, gridSizeX - 1);
+        y = Mathf.Clamp(y, 0, gridSizeY - 1);
+
+        return potentialField[x, y];
     }
 }
