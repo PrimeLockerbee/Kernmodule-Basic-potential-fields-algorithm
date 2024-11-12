@@ -19,6 +19,8 @@ public class GridManager : MonoBehaviour
 
     [SerializeField] private float[,] potentialField;
 
+    public Vector2Int[,] parentDirections;
+
     void Start()
     {
         GenerateGrid();
@@ -73,16 +75,54 @@ public class GridManager : MonoBehaviour
     void CalculatePotentialField()
     {
         potentialField = new float[gridSizeX, gridSizeY];
+        parentDirections = new Vector2Int[gridSizeX, gridSizeY];
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
         for (int x = 0; x < gridSizeX; x++)
         {
             for (int y = 0; y < gridSizeY; y++)
             {
-                Vector3 cellPosition = new Vector3(x * cellSize, y * cellSize, 0f);
-                float distanceToGoal = Vector3.Distance(cellPosition, goal.transform.position);
-                potentialField[x, y] = distanceToGoal;
+                potentialField[x, y] = float.MaxValue;
             }
         }
+
+        Vector2Int goalPosition = new Vector2Int(Mathf.FloorToInt(goal.transform.position.x / cellSize), Mathf.FloorToInt(goal.transform.position.y / cellSize));
+        queue.Enqueue(goalPosition);
+        potentialField[goalPosition.x, goalPosition.y] = 0;
+
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+
+        while (queue.Count > 0)
+        {
+            Vector2Int current = queue.Dequeue();
+            float currentDistance = potentialField[current.x, current.y];
+
+            foreach (Vector2Int dir in directions)
+            {
+                Vector2Int neighbor = current + dir;
+
+                if (neighbor.x >= 0 && neighbor.x < gridSizeX && neighbor.y >= 0 && neighbor.y < gridSizeY)
+                {
+                    if (potentialField[neighbor.x, neighbor.y] == float.MaxValue && !IsObstacle(neighbor))
+                    {
+                        potentialField[neighbor.x, neighbor.y] = currentDistance + 1;
+                        parentDirections[neighbor.x, neighbor.y] = -dir;
+                        queue.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    bool IsObstacle(Vector2Int position)
+    {
+        RaycastHit hit;
+        Vector3 worldPosition = new Vector3(position.x * cellSize, position.y * cellSize, -1f);
+        if (Physics.Raycast(worldPosition, Vector3.forward, out hit, cellSize))
+        {
+            return hit.collider != null && hit.collider.gameObject.CompareTag("Obstacle");
+        }
+        return false;
     }
 
     public float GetPotentialFieldValue(Vector3 position)

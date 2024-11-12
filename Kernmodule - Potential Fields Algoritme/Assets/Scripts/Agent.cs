@@ -106,11 +106,14 @@ public class Agent : MonoBehaviour
 
     Vector3 CalculatePotentialFieldForce()
     {
-        float potentialFieldValue = gridManager.GetPotentialFieldValue(transform.position);
+        int x = Mathf.FloorToInt(transform.position.x / gridManager.cellSize);
+        int y = Mathf.FloorToInt(transform.position.y / gridManager.cellSize);
 
-        Vector3 potentialFieldForce = -CalculateGradient(potentialFieldValue).normalized;
+        x = Mathf.Clamp(x, 0, gridManager.gridSizeX - 1);
+        y = Mathf.Clamp(y, 0, gridManager.gridSizeY - 1);
 
-        return potentialFieldForce;
+        Vector2Int direction = gridManager.parentDirections[x, y];
+        return new Vector3(direction.x, direction.y, 0).normalized;
     }
 
     Vector3 CalculateGradient(float potentialFieldValue)
