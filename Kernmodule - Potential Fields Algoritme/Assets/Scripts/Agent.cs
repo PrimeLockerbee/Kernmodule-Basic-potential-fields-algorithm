@@ -116,22 +116,6 @@ public class Agent : MonoBehaviour
         return new Vector3(direction.x, direction.y, 0).normalized;
     }
 
-    Vector3 CalculateGradient(float potentialFieldValue)
-    {
-        float epsilon = 0.01f;
-
-        float xPlus = gridManager.GetPotentialFieldValue(transform.position + new Vector3(epsilon, 0, 0));
-        float xMinus = gridManager.GetPotentialFieldValue(transform.position - new Vector3(epsilon, 0, 0));
-
-        float yPlus = gridManager.GetPotentialFieldValue(transform.position + new Vector3(0, epsilon, 0));
-        float yMinus = gridManager.GetPotentialFieldValue(transform.position - new Vector3(0, epsilon, 0));
-
-        float gradientX = (xPlus - xMinus) / (2 * epsilon);
-        float gradientY = (yPlus - yMinus) / (2 * epsilon);
-
-        return new Vector3(gradientX, gradientY, 0f);
-    }
-
     void UpdateVelocityAndPosition(Vector3 force)
     {
         Vector3 newVelocity = force * speed;
