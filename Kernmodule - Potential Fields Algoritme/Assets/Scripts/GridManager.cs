@@ -67,8 +67,8 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        Vector3 goalPosition = Vector3.zero;
-        goalPosition.z = -1f;
+        Vector3 goalPosition = new Vector3(20,20,-1);
+        //goalPosition.z = -1f;
         goal = Instantiate(goalPrefab, goalPosition, Quaternion.identity);
     }
 
